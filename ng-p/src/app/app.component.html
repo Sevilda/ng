@@ -1,0 +1,36 @@
+<div *ngIf="!username">
+    <div class="center">
+        <div>
+            <form [formGroup]="data">
+            <label for="username" > Username: </label>
+            <input id="username" type="text" name="username" formControlName="username">
+        
+            <button type="submit" (click)="onSubmit()">Submit</button>
+        </form>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="username">
+    <mat-tab-group dynamicHeight mat-align-tabs="center" color="primary">
+        <mat-tab label="Chat" routerLink="chat">
+            <div class="center">
+               <app-chat></app-chat>
+            </div>
+        </mat-tab>
+        <mat-tab label="Game" routerLink="game">
+            <div class="center">
+                <ng-template matTabContent>
+                <app-game></app-game> 
+                </ng-template>
+            </div>
+        </mat-tab>
+        <mat-tab label="Scoreboard">
+            <div class="center">
+            <app-scoreboard></app-scoreboard>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+
+
+</div>
