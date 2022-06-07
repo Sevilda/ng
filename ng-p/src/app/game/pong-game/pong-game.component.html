@@ -1,4 +1,9 @@
 <p>{{roomId}}</p>
 <button (click)="destroyRoom()">DESTROY</button>
 
-<p *ngIf="playerData">you: {{playerData['you']}}</p>
+<p *ngIf="playerData"> you: {{playerData['you']}} enemy: {{playerData['enemy']}}</p>
+
+<p *ngIf="winner">The winner is {{winner}}!</p>
+
+<canvas #canvas width="800" height="500"></canvas>
+

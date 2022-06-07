@@ -28,8 +28,8 @@ export class GameComponent implements OnInit{
       //
     })
 
-    this.socketService.fullRoomJoin.subscribe((room: any) => {
-      console.log("joining" + room)
+    this.socketService.currentRoom.subscribe((room: any) => {
+      console.log("current room : " + room)
       this.roomId=room;
       this.waiting=false
       //
@@ -89,7 +89,7 @@ export class GameComponent implements OnInit{
 
   getRoomExists(id:string) {
     var parent = document.querySelector("#roomList")
-    var child = parent?.querySelector(`#` + id)
+    var child = parent?.querySelector("[id='" + id + "']")
     return child
   }
 

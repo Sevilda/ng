@@ -14,9 +14,11 @@ export class SocketService implements OnInit{
   newUser:Subject<any> = new Subject<any>();
   newRoom:Subject<any> = new Subject<any>();
   fullRoom:Subject<any> = new Subject<any>();
-  fullRoomJoin:Subject<any> = new Subject<any>();
+  currentRoom:Subject<any> = new Subject<any>();
   rooms:Subject<any> = new Subject<any>();
   playerData:Subject<any> = new Subject<any>();
+  enemyBat:Subject<any> = new Subject<any>();
+  readyRoom:Subject<any> = new Subject<any>();
 
 
 
@@ -37,20 +39,36 @@ export class SocketService implements OnInit{
     this.socket.on('fullroom', (room:any)=> {
       this.fullRoom.next(room);
     })
+
     this.socket.on('fullroomJoin', (room:any)=> {
-      this.fullRoomJoin.next(room);
+      this.currentRoom.next(room);
     })
 
     this.socket.on('rooms', (res:any)=> {
       this.rooms.next(res)
     })
 
-    this.socket.on('iam', (uname:any)=>{
+    this.socket.on('iam', (uname:any, playerNo:boolean)=>{
       console.log({you: this.getUsername(), enemy: uname['username'] })
-      this.playerData.next({you: this.getUsername(), enemy: uname['username'] })
+      this.playerData.next({you: this.getUsername(), enemy: uname['username'], isplayer1: playerNo })
     })
 
-    
+    this.socket.on('destroyRoom', (id:any)=>{
+      console.log(id);
+      this.currentRoom.next("");
+    })
+
+    this.socket.on('enemyUpdate', (stat:any)=>{
+      this.enemyBat.next({status:stat })
+    })
+
+    this.socket.on('ready', ()=>{
+      this.readyRoom.next({ready: "true"});
+    })
+
+    this.socket.on('wait', (scores:number[])=>{
+      this.readyRoom.next({ready: "false", score:scores});
+    })
 
     }
 
@@ -111,6 +129,20 @@ export class SocketService implements OnInit{
 
   setup(id:string){
     this.socket.emit('setup', id)
+  }
+
+
+  enemyUpdate(id:string, status:string){
+    this.socket.emit('enemyUpdate', id, status)
+  }
+
+  score(id:string, scores:number[]){
+    //wait after scoring
+    this.socket.emit('score', id, scores)
+  }
+
+  ready(id:string){
+    this.socket.emit('ready', id)
   }
 
 

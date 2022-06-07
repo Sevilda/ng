@@ -73,14 +73,31 @@ io.on('connection', (socket) => {
 
   socket.on('setup', (id)=> {
     //id is a room id. this only emits to the partner
-    socket.broadcast.emit('iam', socket.handshake.auth.username)
+    //let player1 be the room's creator
+    socket.broadcast.emit('iam', socket.handshake.auth.username, id!=socket.id.substring(0, 6))
+    //emit a countdown
+    io.sockets.in(id).emit('ready');
   })
 
   socket.on('destroy', (roomid)=> {
     console.log('destroy '+ roomid)
+    io.sockets.in(roomid).emit('destroyRoom', roomid)
     io.socketsLeave(roomid);
   })
 
+
+  socket.on('enemyUpdate', (id, status)=>{
+    //broadcast to other sockets in the room.
+    socket.broadcast.to(id).emit('enemyUpdate', status)
+  })
+
+  socket.on('score', (id, scores)=>{
+    io.sockets.in(id).emit('wait', scores)
+  })
+
+  socket.on('ready', (id)=>{
+    io.sockets.in(id).emit('ready')
+  })
 });
 
 
