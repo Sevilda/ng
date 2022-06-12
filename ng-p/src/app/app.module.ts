@@ -12,6 +12,8 @@ import { AppRoutingModule } from './app-routing.module';
 import {MatTabsModule} from  '@angular/material/tabs';
 import { SocketService } from './socket.service';
 import { PongGameComponent } from './game/pong-game/pong-game.component';
+import {MatButtonModule} from '@angular/material/button'; 
+import {MatIconModule} from '@angular/material/icon'; 
 
 const config: SocketIoConfig = { url: 'http://localhost:4200', options: {} };
 
@@ -32,7 +34,9 @@ const config: SocketIoConfig = { url: 'http://localhost:4200', options: {} };
     FormsModule,
     ReactiveFormsModule,
     SocketIoModule.forRoot(config),
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule, 
+    MatButtonModule,
+    MatIconModule
   ],
   providers: [SocketService],
 

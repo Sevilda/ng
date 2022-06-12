@@ -1,13 +1,19 @@
 <div class="rooms" *ngIf="!waiting && !roomId">
     <ul id="roomList">
-        <li><button id="default" (click)="handleClick($event)">Create new room</button></li>
+        <li>
+            <button mat-raised-button color="primary" id="default" (click)="handleClick($event)">Create new room</button>
+        </li>
+        <li *ngFor="let r of rooms">
+            <button mat-raised-button color="accent" [id]=r (click)="handleClick($event)">Join {{r}}</button>
+        </li>
     </ul>
 </div>
 
-<div *ngIf="waiting">
+
+<div *ngIf="waiting" class="center">
     <h1>Waiting for a match</h1>
     <!-- loading screen -->
-    <div class="loader"></div> 
+    <div class="loader center"></div> 
 </div>
 
 

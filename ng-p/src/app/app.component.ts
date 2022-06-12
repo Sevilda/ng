@@ -21,7 +21,6 @@ export class AppComponent implements OnInit{
       username: new FormControl("", Validators.required),
   });
 
-    this.socketService.getCurrentId()
   }
 
   ngOnDestroy() {

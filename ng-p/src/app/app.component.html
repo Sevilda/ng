@@ -30,6 +30,12 @@
             <app-scoreboard></app-scoreboard>
             </div>
         </mat-tab>
+        <mat-tab [disabled]="true" label="Your username: {{username}}">
+            <div class="center">
+            <app-scoreboard></app-scoreboard>
+            </div>
+        </mat-tab>
+
     </mat-tab-group>
 
 

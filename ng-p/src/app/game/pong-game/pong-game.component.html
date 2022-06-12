@@ -1,9 +1,19 @@
-<p>{{roomId}}</p>
-<button (click)="destroyRoom()">DESTROY</button>
+<button mat-icon-button (click)="destroyRoom()">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
 
-<p *ngIf="playerData"> you: {{playerData['you']}} enemy: {{playerData['enemy']}}</p>
+<div *ngIf="!winner" class="center"> 
+<table *ngIf="playerData" >
+    <tr>
+        <td *ngIf="playerData['isplayer1']">{{playerData['you']}} (You)</td>
+        <td> {{playerData['enemy']}}</td>
+        <td *ngIf="!playerData['isplayer1']">{{playerData['you']}} (You) </td>
+    </tr>
+</table>
+</div>
 
+<div  class="center"> 
 <p *ngIf="winner">The winner is {{winner}}!</p>
+</div>
 
 <canvas #canvas width="800" height="500"></canvas>
-

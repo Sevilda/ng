@@ -71,17 +71,22 @@ export class PongGameComponent implements OnInit {
         window.cancelAnimationFrame(this.ballAni)
         this.setStartValues()
 
+        //winconditions
         if (data["score"][0] >= 2) {
           //p1 wins. win for self, if p1 is self. 
           this.winner = this.playerData["isplayer1"] ? this.playerData["you"] :  this.playerData["enemy"]
-          this.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
           window.cancelAnimationFrame(this.canvasAni)
+          this.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
+          this.canvas.nativeElement.parentNode?.removeChild(this.canvas.nativeElement)
         }
         else if (data["score"][1] >= 2) {
           this.winner = this.playerData["isplayer1"] ? this.playerData["enemy"] :  this.playerData["you"]
           window.cancelAnimationFrame(this.canvasAni)
           this.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
-        } else {
+          this.canvas.nativeElement.parentNode?.removeChild(this.canvas.nativeElement)
+        } else 
+        //continute
+        {
           setTimeout(() => {
             this.socketService.ready(this.roomId)
           }, 1000);

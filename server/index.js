@@ -1,5 +1,5 @@
-const { notDeepStrictEqual } = require('assert');
-const { createSocket } = require('dgram');
+
+const {  addUser, addLog, logoutUser, getLoggedInUsers, getLogs } = require('./db');
 
 const app = require('express')();
 const http = require('http').createServer(app);
@@ -9,29 +9,48 @@ const io = require('socket.io')(http, {
   }
 });
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+ next();
+});
+
 app.get('/', (req, res) => {
   res.send('It works');
 });
 
+app.get('/users', async (req, res)=>{
+  var data = await getLoggedInUsers()
+  res.json(data)
+})
+
+app.get('/logs', async (req, res)=>{
+  var data = await getLogs()
+  res.json(data)
+})
 
 
 io.on('connection', (socket) => {
   console.log('a user connected');
+  addLog("socket", "connected", socket.id)
 
   socket.on('connect', ()=>{
+    
   })
 
   socket.on('disconnect', () => {
     console.log('user disconnected');
+    logoutUser(socket.id)
+    addLog("socket", "disconnected", socket.id)
   });
 
-  socket.on('user', ()=>
-  {
-  });
 
   socket.on('add user', (username)=>{
     socket.handshake.auth.username = username;
     socket.broadcast.emit('add user', username)
+
+    addUser(username["username"], socket.id)
+    addLog("socket", "assigned username", socket.id)
   })
 
   socket.on('users', ()=>{
@@ -43,6 +62,7 @@ io.on('connection', (socket) => {
 
   socket.on('message', (data) => {
     socket.broadcast.emit('messageBr', data);
+    addLog("socket", "sent message", socket.id)
   })
 
   socket.on('join', (id)=>{ 
@@ -51,6 +71,9 @@ io.on('connection', (socket) => {
       socket.join(id)
       //response that room is open now
       socket.broadcast.emit('newroom', id)
+      addLog("room", "created", id)
+      addLog("socket", "joined room: " +id, socket.id)
+
     }
     else if (room.size==1){
       socket.join(id)
@@ -58,6 +81,7 @@ io.on('connection', (socket) => {
       socket.broadcast.emit('fullroom', id)
       //alert the clients
       io.sockets.in(id).emit('fullroomJoin', id)
+      addLog("socket", "joined room: " +id, socket.id)
       }
   })
 
@@ -77,12 +101,13 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('iam', socket.handshake.auth.username, id!=socket.id.substring(0, 6))
     //emit a countdown
     io.sockets.in(id).emit('ready');
+    addLog("room", "ready", id)
   })
 
   socket.on('destroy', (roomid)=> {
-    console.log('destroy '+ roomid)
     io.sockets.in(roomid).emit('destroyRoom', roomid)
     io.socketsLeave(roomid);
+    addLog("room", "destroyed", roomid)
   })
 
 
@@ -93,7 +118,10 @@ io.on('connection', (socket) => {
 
   socket.on('score', (id, scores)=>{
     io.sockets.in(id).emit('wait', scores)
+    addLog("socket", "scored", socket.id)
   })
+
+  socket.on('win', ()=>{})
 
   socket.on('ready', (id)=>{
     io.sockets.in(id).emit('ready')
@@ -101,7 +129,15 @@ io.on('connection', (socket) => {
 });
 
 
-
 http.listen(3000, () => {
   console.log('listening on *:3000');
+  addLog("log", "server started", "")
 });
+
+process.on('SIGINT', function(){
+  addLog("log", "server stopped", "")
+  console.log('stopping server')
+  setTimeout(() => {
+    process.exit(0);
+  }, 1000);
+})

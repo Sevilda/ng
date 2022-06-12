@@ -85,9 +85,6 @@ export class SocketService implements OnInit{
     }
   }
 
-  getCurrentId() {
-    this.socket.emit('user');
-  }
 
   registerUser(username: string) {
     this.socket.auth = { username }
