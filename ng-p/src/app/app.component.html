@@ -27,7 +27,9 @@
         </mat-tab>
         <mat-tab label="Scoreboard">
             <div class="center">
+                <ng-template matTabContent>
             <app-scoreboard></app-scoreboard>
+                </ng-template>
             </div>
         </mat-tab>
         <mat-tab [disabled]="true" label="Your username: {{username}}">

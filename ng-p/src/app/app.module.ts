@@ -10,10 +10,12 @@ import { ScoreboardComponent } from './scoreboard/scoreboard.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import {MatTabsModule} from  '@angular/material/tabs';
-import { SocketService } from './socket.service';
+import { SocketService } from './service/socket.service';
 import { PongGameComponent } from './game/pong-game/pong-game.component';
 import {MatButtonModule} from '@angular/material/button'; 
 import {MatIconModule} from '@angular/material/icon'; 
+import {MatTableModule} from '@angular/material/table';
+import { HttpClientModule } from '@angular/common/http';
 
 const config: SocketIoConfig = { url: 'http://localhost:4200', options: {} };
 
@@ -36,7 +38,9 @@ const config: SocketIoConfig = { url: 'http://localhost:4200', options: {} };
     SocketIoModule.forRoot(config),
     MatProgressSpinnerModule, 
     MatButtonModule,
-    MatIconModule
+    MatIconModule, 
+    MatTableModule, 
+    HttpClientModule
   ],
   providers: [SocketService],
 

@@ -1,5 +1,5 @@
 
-const {  addUser, addLog, logoutUser, getLoggedInUsers, getLogs } = require('./db');
+const {  addUser, addLog, logoutUser, getLoggedInUsers, getLogs, getScoreboard, addScore } = require('./db');
 
 const app = require('express')();
 const http = require('http').createServer(app);
@@ -26,6 +26,11 @@ app.get('/users', async (req, res)=>{
 
 app.get('/logs', async (req, res)=>{
   var data = await getLogs()
+  res.json(data)
+})
+
+app.get('/scores', async (req, res)=>{
+  var data = await getScoreboard()
   res.json(data)
 })
 
@@ -121,7 +126,10 @@ io.on('connection', (socket) => {
     addLog("socket", "scored", socket.id)
   })
 
-  socket.on('win', ()=>{})
+  socket.on('win', (username, score)=>{
+    addScore(username[0], score[0])
+    addScore(username[1], score[1])
+  })
 
   socket.on('ready', (id)=>{
     io.sockets.in(id).emit('ready')

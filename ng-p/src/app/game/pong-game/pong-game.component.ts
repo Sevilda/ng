@@ -1,6 +1,6 @@
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { SocketService } from 'src/app/socket.service';
+import { SocketService } from 'src/app/service/socket.service';
 
 const CANVAS_WIDTH: number = 800;
 const CANVAS_HEIGHT: number = 500;
@@ -36,7 +36,7 @@ export class PongGameComponent implements OnInit {
   ballAni: any;
   canvasAni: any;
 
-  winner:any=null;
+  winner: any = null;
 
   ready: boolean;
 
@@ -74,17 +74,23 @@ export class PongGameComponent implements OnInit {
         //winconditions
         if (data["score"][0] >= 2) {
           //p1 wins. win for self, if p1 is self. 
-          this.winner = this.playerData["isplayer1"] ? this.playerData["you"] :  this.playerData["enemy"]
+          this.winner = this.playerData["isplayer1"] ? this.playerData["you"] : this.playerData["enemy"]
           window.cancelAnimationFrame(this.canvasAni)
           this.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
           this.canvas.nativeElement.parentNode?.removeChild(this.canvas.nativeElement)
+          //emit scores on win
+          if (this.playerData["isplayer1"])
+            this.socketService.win([this.playerData["you"], this.playerData["enemy"]],[this.scores[0]-this.scores[1]+7, this.scores[1]-this.scores[0]+7])
         }
         else if (data["score"][1] >= 2) {
-          this.winner = this.playerData["isplayer1"] ? this.playerData["enemy"] :  this.playerData["you"]
+          this.winner = this.playerData["isplayer1"] ? this.playerData["enemy"] : this.playerData["you"]
           window.cancelAnimationFrame(this.canvasAni)
           this.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
           this.canvas.nativeElement.parentNode?.removeChild(this.canvas.nativeElement)
-        } else 
+          //emit scores on win
+          if (!this.playerData["isplayer1"])
+            this.socketService.win([this.playerData["you"], this.playerData["enemy"]],[this.scores[1]-this.scores[0]+7, this.scores[0]-this.scores[1]+7])
+        } else
         //continute
         {
           setTimeout(() => {
@@ -220,7 +226,10 @@ export class PongGameComponent implements OnInit {
       if (this.batPresent()) {
         this.BALL_SPEED[0] = -this.BALL_SPEED[0]
       }
-      else this.score()
+      else {
+        this.ready = false
+        this.score()
+      }
     }
     //wall collision, y speed goes reverse
     if (this.wallCollision()) {
@@ -263,7 +272,6 @@ export class PongGameComponent implements OnInit {
 
     this.socketService.score(this.roomId, this.scores);
     this.setStartValues();
-    this.ready = false
   }
 
   randomSpeed() {

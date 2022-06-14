@@ -1,5 +1,6 @@
+import { TransitiveCompileNgModuleMetadata } from '@angular/compiler';
 import { AfterViewInit, Component, Directive, ElementRef, HostListener, OnInit, Renderer2 } from '@angular/core';
-import { SocketService } from '../socket.service';
+import { SocketService } from '../service/socket.service';
 
 @Component({
   selector: 'app-game',
@@ -19,14 +20,17 @@ export class GameComponent implements OnInit {
     this.socketService.getRooms()
 
     this.socketService.newRoom.subscribe((room: any) => {
-//      this.createRoomEntity(room)
-        this.rooms.push(room)
-      //
+      this.rooms.push(room)
+    })
+
+    this.socketService.deleteRoom.subscribe((room: any) => {
+      if (this.rooms.indexOf(room, 0) > -1)
+       this.rooms.splice(this.rooms.indexOf(room, 0), 1)
     })
 
     this.socketService.fullRoom.subscribe((room: any) => {
       console.log("remove" + room)
-//      this.removeRoomEntity(room)
+      //      this.removeRoomEntity(room)
       if (this.rooms.indexOf(room, 0) > -1)
         this.rooms.splice(this.rooms.indexOf(room, 0), 1)
       console.log(this.rooms)
@@ -40,11 +44,10 @@ export class GameComponent implements OnInit {
       //
     })
 
-
     this.socketService.rooms.subscribe((res: any) => {
       for (var i = 0; i < res.length; i++) {
         if (!this.getRoomExists(res[i])) {
-//          this.createRoomEntity(res[i])
+          //          this.createRoomEntity(res[i])
           this.rooms.push(res[i])
           console.log(this.rooms)
         }
@@ -55,7 +58,9 @@ export class GameComponent implements OnInit {
 
   handleClick(event: any) {
     var target = event.target || event.srcElement || event.currentTarget;
-    var id = (target as Element).parentElement?.id
+    var id = (target as Element).id
+    if (id=="") 
+      id = (target as Element).parentElement!.id
     console.log(target)
     console.log(id)
     if (id == "default") {
@@ -97,9 +102,11 @@ export class GameComponent implements OnInit {
 
 
   getRoomExists(id: string) {
-    var parent = document.querySelector("#roomList")
-    var child = parent?.querySelector("[id='" + id + "']")
-    return child
+
+    if (this.rooms.indexOf(id, 0) > -1)
+      return true
+    return false
+
   }
 
 

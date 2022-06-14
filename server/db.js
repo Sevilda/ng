@@ -1,8 +1,4 @@
-//import { open } from 'sqlite'
-
-
 const sqlite = require('sqlite')
-
 const sqlite3 = require('sqlite3').verbose();
 
 
@@ -42,6 +38,22 @@ async function logoutUser(socketid){
     (await stm).run(logout, socketid);
 }
 
+async function addScore(username, score){
+    console.log("adding score" + username, score)
+    var time= new Date().toISOString().slice(0, 19).replace('T', ' ');
+    const db = await createDBconnection();
+    var stm= db.prepare("INSERT INTO scoreboard (username, score, date) VALUES (?, ?, ?)");
+
+    (await stm).run(username, score, time);
+}
+
+async function getScoreboard(){  
+    const db = await createDBconnection();
+    var res = await db.all("SELECT * FROM scoreboard ORDER BY score DESC, username LIMIT 10")
+    return res
+}
+
+
 async function getLoggedInUsers(){
     const db = await createDBconnection();
     var res = await db.all("SELECT * FROM user WHERE logout IS NULL");
@@ -55,9 +67,16 @@ async function getLogs(){
 }
 
 
+//max score is 14. score is (own score-enemy score)+7
+//test game is 7-5
+//addScore("test_win", 9)
+//addScore("test_lose", 5)
+
 module.exports.addUser = addUser
 module.exports.logoutUser = logoutUser
 module.exports.addLog = addLog
 module.exports.getLoggedInUsers = getLoggedInUsers
 module.exports.getLogs = getLogs
+module.exports.addScore = addScore
+module.exports.getScoreboard = getScoreboard
 

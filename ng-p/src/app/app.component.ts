@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { SocketService } from './socket.service';
+import { SocketService } from './service/socket.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
