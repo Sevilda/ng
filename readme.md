@@ -1,10 +1,12 @@
 # Angular pong game with chat, and admin interface
 
-##Prereq.:
+## Prereq.:
 
-The application requires an sqlite3 database at C:\sqlite3\game
+The application requires an sqlite3 database at C:\sqlite3\game 
 
-##To launch:
+The tables in the database can be initialized by the SQL files in server/db/init
+
+## To launch:
 
 - cd admin ng serve --port 4000
 - cd ng-p ng serve
